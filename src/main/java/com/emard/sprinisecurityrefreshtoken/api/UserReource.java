@@ -2,6 +2,8 @@ package com.emard.sprinisecurityrefreshtoken.api;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +33,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +50,14 @@ public class UserReource {
     private final UserService userService;
 
     @GetMapping("/users")
+    @Operation(summary = "Pour avoir tous les utilisateurs de l'application")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Pour avoir tous les utilisateurs de l'application",
+        content = {@Content(mediaType = "application/json", schema = @Schema(/*implementation = AppUser.class, */allOf = AppUser.class))}),
+        @ApiResponse(responseCode = "403", description = "Vous devez vous connecter d'abord",
+        content = @Content)
+    })
+    //@Schema(name = "ResponseEntity<List<AppUser>>")
     public ResponseEntity<List<AppUser>> getUsers() {
         return ResponseEntity.ok().body(userService.getUsers());
     }
@@ -113,6 +128,11 @@ public class UserReource {
             throw new RuntimeException("Refresh token is missing");
         }
 
+    }
+    List<AppUser> list = new ArrayList<>();
+    void peupler() {
+        list.add(new AppUser(1l, "John Travolta", "john", "1234", Arrays.asList(new Role(1l, "ROLE_ADMIN"), new Role(2l, "ROLE_USER"))));
+        list.add(new AppUser(2l, "Will Smith", "will", "1234", Arrays.asList(new Role(1l, "ROLE_ADMIN"))));
     }
 
 }
